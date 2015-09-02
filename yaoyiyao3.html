@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=640, user-scalable=no,target-densitydpi=medium-dpi">
+	<script src="//cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
+	<script src="./iscroll.js"></script>
+	<title>摇一摇抽奖活动</title>
+<style>
+	.bg{
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		background: #ea4146;
+	}
+	p {
+		margin: 0;
+	}
+	
+	input {
+		background: none;
+		border: none;
+	}
+	
+	body {
+		margin: 0 auto;
+		max-width: 640px;
+		background: #ea4146;
+	}
+	
+	.head img {
+		display: block;
+		margin: 20px auto 0 auto;
+		width: 350px;
+		position: relative;
+		right: 13px;
+	}
+	
+	.click img {
+		display: block;
+		margin: 30px auto;
+		width: 300px;
+		
+	}
+	
+	.banner .bannerHead img,
+	.banner .bannerFooter img {
+		display: block;
+		margin: 0 auto;
+	}
+	
+	.banner .bannerContent {
+		margin: 0 auto;
+		background-color: #ffffff;
+		min-height: 200px;
+		width: 543px;
+		position: relative;
+		left: 3px;
+		color: #7b5601;
+	}
+	
+	.banner .bennerText {
+		padding: 13px 10px;
+	}
+	
+	.banner .bennerText p {
+		font-size: 20px;
+		line-height: 25px;
+		font-weight: 600;
+	}
+	/*屏幕*/
+	
+	.tent {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: hsla(0, 1%, 18%, 0.44);
+		z-index: 1;
+		display: none;
+	}
+
+	/*摇一摇页面*/
+	
+	.yaoYiYao {
+		position: fixed;
+		z-index: 3;
+		display: none;
+	}
+	
+	.yaoYiYao .image img {
+		position: fixed;
+		top: 0;
+		left: 25%;
+	}
+	
+	.yaoYiYao .image .shang {
+		top: 130px;
+		-webkit-transition: top 0.5s ease;
+		transition: top 0.5s ease;
+	}
+	
+	.yaoYiYao .image .xia {
+		top: 298px;
+		-webkit-transition: top 0.5s ease;
+		transition: top 0.5s ease;
+	}
+
+	/*准备摇一摇文字*/
+	
+	.yaoYiYaoText {
+		position: fixed;
+		z-index: 3;
+		top: 650px;
+		left: 7%;
+		text-align: center;
+		color: #eee;
+		font-size: 42px;
+		font-weight: 900;
+		display: none;
+	}
+
+	
+	.yaoYiYaoPrize a {
+		color: #000000;
+		text-decoration: none;
+		height: 100%;
+	}
+	
+	.yaoYiYaoPrize p {
+		margin-top: 13px;
+	}
+	/*加载中图标*/
+	
+	.loading {
+		z-index: 5;
+		position: fixed;
+		top: 640px;
+		left: 48%;
+		display: none;
+	}
+	
+	
+	/* 中奖名单 */
+	.txtMarquee-left .row{
+		margin: 65px 65px 0px 65px;
+	}	
+
+	.txtMarquee-left {
+		position: fixed;
+		top: 10%;
+		left: 7%;
+		width: 555px;
+	}
+
+	.txtMarquee-left .bd {
+		padding: 10px;
+		background: rgb(255, 149, 11);
+		font-size: 30px;
+		border-radius:5px;
+		font-weight: 900;
+	}
+
+	.txtMarquee-left .bd li {
+		line-height: 40px;
+		text-align:left;
+		width: auto !important;
+		font-family: 黑体;
+		color: aliceblue;
+		display: block;
+	}
+	.txtMarquee-left .textRight{
+		text-align: right!important;
+	}
+	
+	.txtMarquee-left .prize{
+		margin-top: 30px;
+	}
+
+	 .txtMarquee-left a{
+		text-decoration:none;
+		 color: black;
+	}
+
+	.prize p{
+		color: #7e0609!important;
+		text-align: center!important;
+		line-height: 50px!important;
+		
+	}
+	.prizeText{
+		font-family: 黑体;
+		color: #7e0609;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	.zzzx{
+		width: 300px;
+		height: 50px;
+		background:#bc0a10;
+		border-radius: 5px;
+		margin: 0 auto;
+		line-height: 50px;
+		text-align: center;
+		font-weight: 900;
+		font-size: 30px;
+		font-family: 黑体;
+		color: aliceblue;
+		margin-top: 20px;
+		margin-bottom: 30px;
+	}
+	
+	.clock{
+		width: 40px;
+		height: 40px;
+		position: absolute;
+		top: -20px;
+		left: 95%;
+		background: #000000;
+		border-radius: 50%;
+		color: aliceblue;
+		font-size: 20px;
+		font-weight: 900;
+	}
+	.clock p{
+		margin-left: 9px;
+		margin-top: 9px;
+	}
+	
+	
+	
+	#wrapper {
+		position: relative;
+		height: 300px;
+		overflow: hidden;
+
+		/* Prevent native touch events on Windows */
+		-ms-touch-action: none;
+
+		/* Prevent the callout on tap-hold and text selection */
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+
+		/* Prevent text resize on orientation change, useful for web-apps */
+		-webkit-text-size-adjust: none;
+		-moz-text-size-adjust: none;
+		-ms-text-size-adjust: none;
+		-o-text-size-adjust: none;
+		text-size-adjust: none;
+	}
+
+	#scroller {
+		position: absolute;
+
+		/* Prevent elements to be highlighted on tap */
+		-webkit-tap-highlight-color: rgba(0,0,0,0);
+
+		/* Put the scroller into the HW Compositing layer right from the start */
+		-webkit-transform: translateZ(0);
+		-moz-transform: translateZ(0);
+		-ms-transform: translateZ(0);
+		-o-transform: translateZ(0);
+		transform: translateZ(0);
+	}
+	
+</style>
+</head>
+
+<body>
+	
+	<div class="head"><img src="head.png" alt="">
+	</div>
+	<div class="click"><img src="click.png" alt="">
+	</div>
+	<div class="banner">
+		<div class="bannerHead"><img src="banner1.png" alt="">
+		</div>
+		<div class="bannerContent">
+			<div class="bennerText">
+				<p>活动规则：</p>
+				<p>iPhone6 （1名）iPhone6 （洲际豪华客房 一晚（1名）iPhone6 （1名）iPhone6 （1名）iPhone6 （1名）iPhone6 （1名）iPhone6 （1名）iPhone6 （1名）</p>
+				<p>活动时间：</p>
+				<p>2015-05-26 ~ 2015-06-30</p>
+				<p>鼓励奖：</p>
+				<p>洲际早餐抵用卷一张（30名）</p>
+				<p>鼓励奖：</p>
+				<p>洲际早餐抵用卷一张（30名）</p>
+				<p>鼓励奖：</p>
+				<p>洲际早餐抵用卷一张（30名）</p>
+			</div>
+		</div>
+		<div class="bannerFooter"><img src="banner2.png" alt="">
+		</div>
+
+	</div>
+	<div class="tent"></div>
+	
+	
+
+	
+	<div class="yaoYiYao">
+		<div class="image"><img class="shang" src="shang.png" alt=""><img class="xia" src="xia.png" alt="">
+		</div>
+	</div>
+	<div class="yaoYiYaoText">
+		<p>大力摇呀！</p>
+		<p>大奖正朝你的怀抱全力冲刺呢！</p>
+	</div>
+	
+	
+	<div class="txtMarquee-left">
+
+		<div class="bd">
+		<div class="clock"><p>╳</p></div>
+		<div class="row">
+			
+			<div id="wrapper">
+					<ul id="scroll">
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一台阿斯顿发送到法神阿斯顿发
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li>莫一一获得一
+						</li>
+						<li class="textRight">………</li>
+					</ul>
+				</div>
+					
+					</div>
+					
+			<div class="prize">
+
+<!--			<p>您已参与本次抽奖活动</p><p>只限一次哦!</p>-->
+
+		<p>您已获得:</p><p class="prizeText">嘎嘎嘎嘎嘎嘎嘎嘎嘎嘎烦烦烦</p>
+			</div>
+			<a href='luckylist.html'>
+			<div class="zzzx">查看奖品</div>
+			</a>
+		</div>
+		
+	</div>
+	
+	
+	
+	<div class="loading"><img src="loading.gif" alt=""></div>
+	<audio class="music"></audio>
+	<audio class="music1" src="1.mp3"></audio>
+	<audio class="music2" src="2.mp3"></audio>
+	<div class="bg"></div>
+	
+	
+</body>
+<script>
+	
+		myScroll = new IScroll('#wrapper');
+	
+	
+//	$('.click').click(function () {
+//		$('.yaoYiYao').show();
+//		$('.yaoYiYaoText').show();
+//		$('.tent').show();
+//	});
+//	
+//
+//	var luckyDrawId = $.location.getQueryArgv('luckyDrawId');
+//	var luckyDraw = {};
+//	var phone = '';
+//	var name = '';
+//
+//	function init() {　
+//		
+//		if (window.DeviceMotionEvent) {　　　　 // 移动浏览器支持运动传感事件　　
+//			window.addEventListener('devicemotion', deviceMotionHandler, false);　　
+//		}
+//	}
+//	var SHAKE_THRESHOLD = 3000;
+//	// 定义一个变量保存上次更新的时间
+//	var last_update = 0;
+//	// 紧接着定义x、y、z记录三个轴的数据以及上一次出发的时间
+//	var y;
+//	var x;
+//	var z;
+//
+//	function deviceMotionHandler(eventData) {　　 // 获取含重力的加速度
+//		　　
+//		var acceleration = eventData.accelerationIncludingGravity;　　　　
+//
+//		y = acceleration.y; // TODO:在此处可以实现摇一摇之后所要进行的数据逻辑操作
+//		x = acceleration.x;
+//		z = acceleration.z;　　　
+//		
+//		if (y > 18 || x > 15 || z > 15) {　
+//					
+//			$('.yaoYiYao').show();
+//			$('.yaoYiYaoText').show();
+//			$('.tent').show();
+//			
+//			window.removeEventListener('devicemotion', deviceMotionHandler, false);
+//			yaoyiyao()
+//
+//		}
+//
+//	}
+//
+//
+//	function yaoyiyao() {
+//		$('.music1').attr({
+//			src: '1.mp3',
+//			autoplay: 'autoplay'
+//		})
+//		var shang = $('.yaoYiYao .image .shang').css('top');
+//		var xia = $('.yaoYiYao .image .xia').css('top');
+//		$('.yaoYiYao .image .shang').css('top', '80px');
+//		$('.yaoYiYao .image .xia').css('top', '348px');
+//		setTimeout(function () {
+//			$('.yaoYiYao .image .shang').css('top', shang);
+//			$('.yaoYiYao .image .xia').css('top', xia);
+//			//			$('.music').attr({'src':'2.mp3',autoplay:'autoplay'})
+//		}, 500);
+//		setTimeout(function () {
+//			alert('hehe');
+//		}, 1000);
+//	}
+//
+//	function test() {
+//		alert('hehedddd');
+//	}
+	
+
+
+</script>
+
+</html>
